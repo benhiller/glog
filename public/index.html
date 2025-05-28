@@ -403,6 +403,18 @@
             applyFilter();
         });
         
+        // Set up scroll event listener to disable autoscroll when user scrolls up
+        logContainer.addEventListener('scroll', function() {
+            // Check if user is at the bottom (within 5px tolerance)
+            const isAtBottom = logContainer.scrollTop >= logContainer.scrollHeight - logContainer.clientHeight - 5;
+            
+            // If autoscroll is enabled and user scrolled up from bottom, disable it
+            if (autoscroll && !isAtBottom) {
+                autoscroll = false;
+                autoscrollBtn.textContent = 'Autoscroll: OFF';
+            }
+        });
+        
         // Start connection
         connect();
     </script>
