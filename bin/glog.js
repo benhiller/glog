@@ -5,7 +5,7 @@ const WebSocket = require('ws');
 const path = require('path');
 const http = require('http');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3214;
 
 const app = express();
 const server = http.createServer(app);
@@ -21,7 +21,7 @@ const clients = new Set();
 wss.on('connection', (ws) => {
   clients.add(ws);
   console.error(`[glog] Client connected. Total clients: ${clients.size}`);
-  
+
   ws.on('close', () => {
     clients.delete(ws);
     console.error(`[glog] Client disconnected. Total clients: ${clients.size}`);
@@ -35,7 +35,7 @@ function broadcast(message) {
     timestamp,
     message: message.trim()
   };
-  
+
   clients.forEach(client => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(logEntry));
