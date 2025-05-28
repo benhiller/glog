@@ -52,7 +52,7 @@
         }
         
         .log-container {
-            height: calc(100vh - 80px);
+            height: calc(100vh - 120px);
             overflow-y: auto;
             padding: 1rem;
             scroll-behavior: smooth;
@@ -78,6 +78,38 @@
             white-space: pre-wrap;
         }
         
+        .filter-container {
+            padding: 0 1rem;
+            background-color: #2d2d30;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            height: 40px;
+        }
+        
+        .filter-input {
+            flex: 1;
+            background-color: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            color: #d4d4d4;
+            font-family: inherit;
+            font-size: 0.875rem;
+        }
+        
+        .filter-input:focus {
+            outline: none;
+            border-color: #0078d4;
+        }
+        
+        .filter-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
         .controls {
             position: fixed;
             bottom: 1rem;
@@ -118,6 +150,11 @@
         </div>
     </div>
     
+    <div class="filter-container">
+        <span class="filter-label">Filter:</span>
+        <input type="text" class="filter-input" id="filterInput" placeholder="Type to filter log messages...">
+    </div>
+    
     <div class="log-container" id="logContainer">
         <div class="log-entry">
             <div class="timestamp">--:--:--</div>
@@ -133,10 +170,13 @@
     <script>
         let ws;
         let autoscroll = true;
+        let filterText = '';
+        let allLogEntries = [];
         const logContainer = document.getElementById('logContainer');
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
         const autoscrollBtn = document.getElementById('autoscrollBtn');
+        const filterInput = document.getElementById('filterInput');
         
         function connect() {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -255,6 +295,15 @@
         }
 
         function addLogEntry(timestamp, message) {
+            // Store the log entry data
+            const logData = { timestamp, message };
+            allLogEntries.push(logData);
+            
+            // Apply current filter
+            applyFilter();
+        }
+        
+        function createLogElement(timestamp, message) {
             const logEntry = document.createElement('div');
             logEntry.className = 'log-entry';
             
@@ -269,27 +318,63 @@
             logEntry.appendChild(timestampEl);
             logEntry.appendChild(messageEl);
             
-            // Remove the initial "Waiting for log data..." message
-            if (logContainer.children.length === 1 && 
-                logContainer.children[0].querySelector('.message').textContent === 'Waiting for log data...') {
-                logContainer.innerHTML = '';
+            return logEntry;
+        }
+        
+        function applyFilter() {
+            // Clear the container
+            logContainer.innerHTML = '';
+            
+            // Filter entries based on current filter text
+            const filteredEntries = filterText ? 
+                allLogEntries.filter(entry => 
+                    entry.message.toLowerCase().includes(filterText.toLowerCase())
+                ) : allLogEntries;
+            
+            // Add filtered entries to the container
+            filteredEntries.forEach(entry => {
+                const logElement = createLogElement(entry.timestamp, entry.message);
+                logContainer.appendChild(logElement);
+            });
+            
+            // Show placeholder if no entries
+            if (filteredEntries.length === 0 && allLogEntries.length > 0) {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'log-entry';
+                placeholder.innerHTML = '<div class="timestamp">--:--:--</div><div class="message">No messages match the current filter</div>';
+                logContainer.appendChild(placeholder);
+            } else if (allLogEntries.length === 0) {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'log-entry';
+                placeholder.innerHTML = '<div class="timestamp">--:--:--</div><div class="message">Waiting for log data...</div>';
+                logContainer.appendChild(placeholder);
             }
             
-            logContainer.appendChild(logEntry);
-            
-            if (autoscroll) {
-                logEntry.scrollIntoView({ behavior: 'smooth' });
+            // Auto-scroll to bottom if enabled
+            if (autoscroll && filteredEntries.length > 0) {
+                logContainer.scrollTop = logContainer.scrollHeight;
             }
         }
         
         function clearLogs() {
+            allLogEntries = [];
             logContainer.innerHTML = '';
+            const placeholder = document.createElement('div');
+            placeholder.className = 'log-entry';
+            placeholder.innerHTML = '<div class="timestamp">--:--:--</div><div class="message">Waiting for log data...</div>';
+            logContainer.appendChild(placeholder);
         }
         
         function toggleAutoscroll() {
             autoscroll = !autoscroll;
             autoscrollBtn.textContent = `Autoscroll: ${autoscroll ? 'ON' : 'OFF'}`;
         }
+        
+        // Set up filter input event listener
+        filterInput.addEventListener('input', function(e) {
+            filterText = e.target.value;
+            applyFilter();
+        });
         
         // Start connection
         connect();
