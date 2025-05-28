@@ -2,11 +2,19 @@
   "name": "glog",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "bin": {
+    "glog": "./bin/glog.js"
   },
-  "keywords": [],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node bin/glog.js"
+  },
+  "keywords": ["logging", "stream", "web", "terminal"],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "Stream terminal input to a live-updating web interface",
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2"
+  }
 }
