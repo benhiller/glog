@@ -6,3 +6,4 @@ TODO:
 - Decrease default font size, remove/shrink header
 - Change from piping stdin to glog to instead have glog run the command and capture stdin + stderr?
 - Add favicon (very important)
+- Use React + virutalized library to render massive list of logs more efficiently?
