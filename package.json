@@ -27,5 +27,8 @@
   },
   "devDependencies": {
     "parcel": "^2.15.2"
+  },
+  "publishConfig": {
+      "access": "public"
   }
 }
