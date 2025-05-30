@@ -25,6 +25,15 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+}
+
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  max-width: 600px;
 }
 
 .header-controls {
@@ -69,15 +78,6 @@ body {
   background-color: #51cf66;
 }
 
-.filter-container {
-  padding: 0 1rem;
-  background-color: #2d2d30;
-  border-bottom: 1px solid #3e3e42;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  height: 40px;
-}
 
 .filter-input {
   flex: 1;

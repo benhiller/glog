@@ -129,8 +129,6 @@ function App() {
         connected={connected}
         showTimestamp={showTimestamp}
         onToggleTimestamp={toggleTimestamp}
-      />
-      <FilterContainer
         filterText={filterText}
         onFilterChange={setFilterText}
         workers={workers}
