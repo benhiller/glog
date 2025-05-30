@@ -95,9 +95,19 @@ function App() {
   };
 
   const filteredLogs = logs.filter(log => {
-    // Apply text filter
-    if (filterText && !log.message.toLowerCase().includes(filterText.toLowerCase())) {
-      return false;
+    // Apply regex filter
+    if (filterText) {
+      try {
+        const regex = new RegExp(filterText, 'i');
+        if (!regex.test(log.message)) {
+          return false;
+        }
+      } catch (e) {
+        // If regex is invalid, fall back to substring matching
+        if (!log.message.toLowerCase().includes(filterText.toLowerCase())) {
+          return false;
+        }
+      }
     }
     
     // Apply worker filter

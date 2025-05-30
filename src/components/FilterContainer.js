@@ -10,7 +10,7 @@ function FilterContainer({ filterText, onFilterChange, workers, hiddenWorkers, o
         className="filter-input" 
         value={filterText}
         onChange={(e) => onFilterChange(e.target.value)}
-        placeholder="Type to filter log messages..."
+        placeholder="Enter regex pattern to filter log messages..."
       />
       <WorkerFilter 
         workers={workers}
