@@ -35,11 +35,11 @@ const connections = new Set();
 // WebSocket connection handling
 wss.on('connection', (ws) => {
   clients.add(ws);
-  console.error(`[glog] Client connected. Total clients: ${clients.size}`);
+  // console.error(`[glog] Client connected. Total clients: ${clients.size}`);
 
   ws.on('close', () => {
     clients.delete(ws);
-    console.error(`[glog] Client disconnected. Total clients: ${clients.size}`);
+    // console.error(`[glog] Client disconnected. Total clients: ${clients.size}`);
   });
 });
 
