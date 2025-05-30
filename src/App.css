@@ -189,7 +189,7 @@ body {
 .worker-dropdown {
   position: absolute;
   top: 100%;
-  left: 0;
+  right: 0;
   background-color: #2d2d30;
   border: 1px solid #3e3e42;
   border-radius: 4px;
