@@ -6,3 +6,4 @@ TODO:
 - Select all/unselect all for worker filter?
 - Use React + virutalized library to render massive list of logs more efficiently?
 - Set max number of messages stored to avoid using excessive memory
+- Adjust scrollbar thumb color, hard to see currently
