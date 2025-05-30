@@ -4,8 +4,20 @@ const express = require('express');
 const WebSocket = require('ws');
 const path = require('path');
 const http = require('http');
+const { spawn } = require('child_process');
 
 const PORT = process.env.PORT || 3214;
+
+// Parse command line arguments
+const args = process.argv.slice(2);
+if (args.length === 0) {
+  console.error('Usage: glog <command> [args...]');
+  console.error('Example: glog tail -f /var/log/system.log');
+  process.exit(1);
+}
+
+const command = args[0];
+const commandArgs = args.slice(1);
 
 const app = express();
 const server = http.createServer(app);
@@ -46,20 +58,51 @@ function broadcast(message) {
   });
 }
 
-// Read from stdin
-process.stdin.setEncoding('utf8');
-process.stdin.on('data', (chunk) => {
-  const lines = chunk.split('\n');
-  lines.forEach(line => {
-    if (line.trim()) {
-      broadcast(line);
-    }
-  });
-});
+// Spawn the command and capture output
+let childProcess;
 
-process.stdin.on('end', () => {
-  console.error('[glog] stdin ended');
-});
+function startCommand() {
+  childProcess = spawn(command, commandArgs, {
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
+
+  // Handle stdout
+  childProcess.stdout.setEncoding('utf8');
+  childProcess.stdout.on('data', (chunk) => {
+    const lines = chunk.split('\n');
+    lines.forEach(line => {
+      if (line.trim()) {
+        broadcast(`[stdout] ${line}`);
+      }
+    });
+  });
+
+  // Handle stderr
+  childProcess.stderr.setEncoding('utf8');
+  childProcess.stderr.on('data', (chunk) => {
+    const lines = chunk.split('\n');
+    lines.forEach(line => {
+      if (line.trim()) {
+        broadcast(`[stderr] ${line}`);
+      }
+    });
+  });
+
+  // Handle process exit
+  childProcess.on('close', (code, signal) => {
+    const exitMessage = signal 
+      ? `[glog] Command terminated by signal: ${signal}`
+      : `[glog] Command exited with code: ${code}`;
+    console.error(exitMessage);
+    broadcast(exitMessage);
+  });
+
+  childProcess.on('error', (error) => {
+    const errorMessage = `[glog] Failed to start command: ${error.message}`;
+    console.error(errorMessage);
+    broadcast(errorMessage);
+  });
+}
 
 // Track HTTP connections for cleanup
 server.on('connection', (socket) => {
@@ -72,12 +115,18 @@ server.on('connection', (socket) => {
 // Start server
 server.listen(PORT, () => {
   console.error(`[glog] Server running at http://localhost:${PORT}`);
-  console.error(`[glog] Reading from stdin...`);
+  console.error(`[glog] Executing command: ${command} ${commandArgs.join(' ')}`);
+  startCommand();
 });
 
 // Handle graceful shutdown
 process.on('SIGINT', () => {
   console.error('\n[glog] Shutting down...');
+  
+  // Kill the child process
+  if (childProcess && !childProcess.killed) {
+    childProcess.kill('SIGTERM');
+  }
   
   // Immediately close all WebSocket connections
   clients.forEach(client => {
