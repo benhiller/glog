@@ -10,20 +10,20 @@ function App() {
   const [logs, setLogs] = useState([]);
   const [filterText, setFilterText] = useState('');
   const [autoscroll, setAutoscroll] = useState(true);
-  const [showTimestamp, setShowTimestamp] = useState(true);
+  const [showTimestamp, setShowTimestamp] = useState(false);
   const wsRef = useRef(null);
 
   const connect = () => {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}`;
-    
+
     wsRef.current = new WebSocket(wsUrl);
-    
+
     wsRef.current.onopen = () => {
       setConnected(true);
       console.log('Connected to glog server');
     };
-    
+
     wsRef.current.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
@@ -32,15 +32,15 @@ function App() {
         console.error('Error parsing message:', e);
       }
     };
-    
+
     wsRef.current.onclose = () => {
       setConnected(false);
       console.log('Disconnected from glog server');
-      
+
       // Attempt to reconnect after 2 seconds
       setTimeout(connect, 2000);
     };
-    
+
     wsRef.current.onerror = (error) => {
       console.error('WebSocket error:', error);
     };
@@ -48,7 +48,7 @@ function App() {
 
   useEffect(() => {
     connect();
-    
+
     return () => {
       if (wsRef.current) {
         wsRef.current.close();
@@ -68,31 +68,31 @@ function App() {
     setShowTimestamp(!showTimestamp);
   };
 
-  const filteredLogs = filterText 
-    ? logs.filter(log => 
+  const filteredLogs = filterText
+    ? logs.filter(log =>
         log.message.toLowerCase().includes(filterText.toLowerCase())
       )
     : logs;
 
   return (
     <div className="app">
-      <Header 
-        connected={connected} 
+      <Header
+        connected={connected}
         showTimestamp={showTimestamp}
         onToggleTimestamp={toggleTimestamp}
       />
-      <FilterContainer 
-        filterText={filterText} 
-        onFilterChange={setFilterText} 
+      <FilterContainer
+        filterText={filterText}
+        onFilterChange={setFilterText}
       />
-      <LogContainer 
+      <LogContainer
         logs={filteredLogs}
         allLogs={logs}
         autoscroll={autoscroll}
         onAutoscrollChange={setAutoscroll}
         showTimestamp={showTimestamp}
       />
-      <Controls 
+      <Controls
         onClearLogs={clearLogs}
         autoscroll={autoscroll}
         onToggleAutoscroll={toggleAutoscroll}
