@@ -7,38 +7,25 @@ function LogContainer({ logs, allLogs, autoscroll, onAutoscrollChange, showTimes
   const scrollTimeoutRef = useRef(null);
 
   useEffect(() => {
-    if (autoscroll && logs.length > 0) {
-      const container = containerRef.current;
-      const wasAtBottom = container.scrollTop >= container.scrollHeight - container.clientHeight - 5;
-      
-      // Only scroll if we were already at the bottom or this is the first message
-      if (wasAtBottom || logs.length === 1) {
-        container.scrollTop = container.scrollHeight;
-      }
+    if (autoscroll && logs.length > 0 && containerRef.current) {
+      // Always scroll to bottom when autoscroll is enabled and new logs arrive
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: 'instant'
+      });
     }
   }, [logs, autoscroll]);
 
-  const handleScroll = () => {
-    // Clear any existing timeout
-    if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current);
+  const handleWheel = (e) => {
+    const scrollableEl = containerRef.current;
+    if (!scrollableEl) {
+      return;
     }
-
-    // Mark that user has scrolled
-    userScrolledRef.current = true;
-
-    // Set a timeout to reset the user scroll flag after a brief delay
-    scrollTimeoutRef.current = setTimeout(() => {
-      userScrolledRef.current = false;
-    }, 100);
-
-    const container = containerRef.current;
-    const isAtBottom = container.scrollTop >= container.scrollHeight - container.clientHeight - 5;
-    
-    // Only disable autoscroll if user explicitly scrolled up and we're not at bottom
-    if (autoscroll && !isAtBottom && userScrolledRef.current) {
+    const maxScrollHeight =
+      scrollableEl.scrollHeight - scrollableEl.clientHeight;
+    if (e.deltaY < 0) {
       onAutoscrollChange(false);
-    } else if (!autoscroll && isAtBottom) {
+    } else if (scrollableEl.scrollTop === maxScrollHeight) {
       onAutoscrollChange(true);
     }
   };
@@ -75,10 +62,10 @@ function LogContainer({ logs, allLogs, autoscroll, onAutoscrollChange, showTimes
   }, []);
 
   return (
-    <div 
-      className="log-container" 
+    <div
+      className="log-container"
       ref={containerRef}
-      onScroll={handleScroll}
+      onWheel={handleWheel}
     >
       {renderContent()}
     </div>
