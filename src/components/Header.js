@@ -3,11 +3,11 @@ import React from 'react';
 function Header({ connected, showTimestamp, onToggleTimestamp }) {
   return (
     <div className="header">
-      <div className="title">glog - Live Log Viewer</div>
+      <div className="title">glog</div>
       <div className="header-controls">
         <label className="timestamp-toggle">
-          <input 
-            type="checkbox" 
+          <input
+            type="checkbox"
             checked={showTimestamp}
             onChange={onToggleTimestamp}
           />
