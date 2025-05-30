@@ -3,6 +3,7 @@ import Header from './components/Header';
 import FilterContainer from './components/FilterContainer';
 import LogContainer from './components/LogContainer';
 import Controls from './components/Controls';
+import { stripAnsiCodes } from './utils/ansiUtils';
 import './App.css';
 
 function App() {
@@ -33,8 +34,9 @@ function App() {
         // Extract worker name if message follows 'worker | message' format
         const workerMatch = data.message.match(/^([^|]+)\s*\|\s*/);
         if (workerMatch) {
-          const workerName = workerMatch[1].trim();
-          setWorkers(prevWorkers => new Set([...prevWorkers, workerName]));
+          const rawWorkerName = workerMatch[1].trim();
+          const cleanWorkerName = stripAnsiCodes(rawWorkerName);
+          setWorkers(prevWorkers => new Set([...prevWorkers, cleanWorkerName]));
         }
         
         setLogs(prevLogs => [...prevLogs, data]);
@@ -101,8 +103,9 @@ function App() {
     // Apply worker filter
     const workerMatch = log.message.match(/^([^|]+)\s*\|\s*/);
     if (workerMatch) {
-      const workerName = workerMatch[1].trim();
-      if (hiddenWorkers.has(workerName)) {
+      const rawWorkerName = workerMatch[1].trim();
+      const cleanWorkerName = stripAnsiCodes(rawWorkerName);
+      if (hiddenWorkers.has(cleanWorkerName)) {
         return false;
       }
     }
