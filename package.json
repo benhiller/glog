@@ -1,20 +1,31 @@
 {
   "name": "glog",
   "version": "1.0.0",
-  "main": "index.js",
   "bin": {
     "glog": "./bin/glog.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node bin/glog.js"
+    "start": "node bin/glog.js",
+    "build": "parcel build src/index.html --dist-dir dist",
+    "dev": "parcel src/index.html --dist-dir dist"
   },
-  "keywords": ["logging", "stream", "web", "terminal"],
+  "keywords": [
+    "logging",
+    "stream",
+    "web",
+    "terminal"
+  ],
   "author": "",
   "license": "ISC",
   "description": "Stream terminal input to a live-updating web interface",
   "dependencies": {
     "express": "^4.18.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "parcel": "^2.15.2"
   }
 }
