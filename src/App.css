@@ -157,3 +157,69 @@ body {
 .btn.secondary:hover {
   background-color: #4b5563;
 }
+
+.worker-filter {
+  position: relative;
+}
+
+.worker-filter-button {
+  background-color: #1e1e1e;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  color: #d4d4d4;
+  font-family: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.worker-filter-button:hover {
+  border-color: #0078d4;
+}
+
+.dropdown-arrow {
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+}
+
+.worker-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #2d2d30;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  padding: 0.5rem;
+  z-index: 1000;
+  min-width: 200px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.worker-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #d4d4d4;
+}
+
+.worker-checkbox:hover {
+  background-color: #3e3e42;
+}
+
+.worker-checkbox input[type="checkbox"] {
+  margin: 0;
+}
+
+.worker-name {
+  flex: 1;
+  font-family: monospace;
+}

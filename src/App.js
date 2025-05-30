@@ -11,6 +11,8 @@ function App() {
   const [filterText, setFilterText] = useState('');
   const [autoscroll, setAutoscroll] = useState(true);
   const [showTimestamp, setShowTimestamp] = useState(false);
+  const [workers, setWorkers] = useState(new Set());
+  const [hiddenWorkers, setHiddenWorkers] = useState(new Set());
   const wsRef = useRef(null);
 
   const connect = () => {
@@ -27,6 +29,14 @@ function App() {
     wsRef.current.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        
+        // Extract worker name if message follows 'worker | message' format
+        const workerMatch = data.message.match(/^([^|]+)\s*\|\s*/);
+        if (workerMatch) {
+          const workerName = workerMatch[1].trim();
+          setWorkers(prevWorkers => new Set([...prevWorkers, workerName]));
+        }
+        
         setLogs(prevLogs => [...prevLogs, data]);
       } catch (e) {
         console.error('Error parsing message:', e);
@@ -58,6 +68,8 @@ function App() {
 
   const clearLogs = () => {
     setLogs([]);
+    setWorkers(new Set());
+    setHiddenWorkers(new Set());
   };
 
   const toggleAutoscroll = () => {
@@ -68,11 +80,35 @@ function App() {
     setShowTimestamp(!showTimestamp);
   };
 
-  const filteredLogs = filterText
-    ? logs.filter(log =>
-        log.message.toLowerCase().includes(filterText.toLowerCase())
-      )
-    : logs;
+  const toggleWorker = (workerName) => {
+    setHiddenWorkers(prevHidden => {
+      const newHidden = new Set(prevHidden);
+      if (newHidden.has(workerName)) {
+        newHidden.delete(workerName);
+      } else {
+        newHidden.add(workerName);
+      }
+      return newHidden;
+    });
+  };
+
+  const filteredLogs = logs.filter(log => {
+    // Apply text filter
+    if (filterText && !log.message.toLowerCase().includes(filterText.toLowerCase())) {
+      return false;
+    }
+    
+    // Apply worker filter
+    const workerMatch = log.message.match(/^([^|]+)\s*\|\s*/);
+    if (workerMatch) {
+      const workerName = workerMatch[1].trim();
+      if (hiddenWorkers.has(workerName)) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
 
   return (
     <div className="app">
@@ -84,6 +120,9 @@ function App() {
       <FilterContainer
         filterText={filterText}
         onFilterChange={setFilterText}
+        workers={workers}
+        hiddenWorkers={hiddenWorkers}
+        onToggleWorker={toggleWorker}
       />
       <LogContainer
         logs={filteredLogs}
