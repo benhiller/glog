@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-glog is a Node.js command-line tool that reads input streams from stdin and displays them in a live-updating web interface. It creates a web server with WebSocket support to stream log data in real-time to connected browsers.
+glog is a Node.js command-line tool that reads stdout and stderr from a shell command and displays them in a live-updating web interface. It creates a web server with WebSocket support to stream log data in real-time to connected browsers.
 
 ## Development Commands
 
@@ -16,13 +16,13 @@ glog is a Node.js command-line tool that reads input streams from stdin and disp
 
 ```bash
 # Pipe command output to glog
-tail -f /var/log/system.log | glog
+glog tail -f /var/log/system.log
 
 # Stream any command output
-ping google.com | glog
+glog ping google.com
 
 # Use with other CLI tools
-npm run build | glog
+glog npm run build
 ```
 
 ## Architecture
