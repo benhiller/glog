@@ -95,6 +95,23 @@ function App() {
   };
 
   const filteredLogs = logs.filter(log => {
+    // Filter out messages that have worker format but no content after the pipe
+    const workerMatch = log.message.match(/^([^|]+)\s*\|\s*(.*)$/);
+    if (workerMatch) {
+      const content = workerMatch[2].trim();
+      // Skip messages with no content after the worker name
+      if (!content) {
+        return false;
+      }
+      
+      // Apply worker filter
+      const rawWorkerName = workerMatch[1].trim();
+      const cleanWorkerName = stripAnsiCodes(rawWorkerName);
+      if (hiddenWorkers.has(cleanWorkerName)) {
+        return false;
+      }
+    }
+    
     // Apply regex filter
     if (filterText) {
       try {
@@ -107,16 +124,6 @@ function App() {
         if (!log.message.toLowerCase().includes(filterText.toLowerCase())) {
           return false;
         }
-      }
-    }
-    
-    // Apply worker filter
-    const workerMatch = log.message.match(/^([^|]+)\s*\|\s*/);
-    if (workerMatch) {
-      const rawWorkerName = workerMatch[1].trim();
-      const cleanWorkerName = stripAnsiCodes(rawWorkerName);
-      if (hiddenWorkers.has(cleanWorkerName)) {
-        return false;
       }
     }
     
