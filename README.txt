@@ -5,3 +5,4 @@ TODO:
 - Some logs have format: 'worker | job | log...'. Also parse job and allow filtering on that?
 - Select all/unselect all for worker filter?
 - Use React + virutalized library to render massive list of logs more efficiently?
+- Set max number of messages stored to avoid using excessive memory
