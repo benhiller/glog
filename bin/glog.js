@@ -72,7 +72,7 @@ function startCommand() {
     const lines = chunk.split('\n');
     lines.forEach(line => {
       if (line.trim()) {
-        broadcast(`[stdout] ${line}`);
+        broadcast(`${line}`);
       }
     });
   });
@@ -83,14 +83,14 @@ function startCommand() {
     const lines = chunk.split('\n');
     lines.forEach(line => {
       if (line.trim()) {
-        broadcast(`[stderr] ${line}`);
+        broadcast(`${line}`);
       }
     });
   });
 
   // Handle process exit
   childProcess.on('close', (code, signal) => {
-    const exitMessage = signal 
+    const exitMessage = signal
       ? `[glog] Command terminated by signal: ${signal}`
       : `[glog] Command exited with code: ${code}`;
     console.error(exitMessage);
@@ -122,12 +122,12 @@ server.listen(PORT, () => {
 // Handle graceful shutdown
 process.on('SIGINT', () => {
   console.error('\n[glog] Shutting down...');
-  
+
   // Kill the child process
   if (childProcess && !childProcess.killed) {
     childProcess.kill('SIGTERM');
   }
-  
+
   // Immediately close all WebSocket connections
   clients.forEach(client => {
     if (client.readyState === WebSocket.OPEN || client.readyState === WebSocket.CONNECTING) {
@@ -135,18 +135,18 @@ process.on('SIGINT', () => {
     }
   });
   clients.clear();
-  
+
   // Immediately destroy all HTTP connections
   connections.forEach(socket => {
     socket.destroy();
   });
   connections.clear();
-  
+
   // Close the server and exit
   server.close(() => {
     process.exit(0);
   });
-  
+
   // Force exit if server doesn't close within 1 second
   setTimeout(() => {
     console.error('[glog] Force exiting...');
