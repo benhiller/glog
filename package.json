@@ -23,12 +23,13 @@
     "express": "^4.18.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-window": "^1.8.11",
     "ws": "^8.14.2"
   },
   "devDependencies": {
     "parcel": "^2.15.2"
   },
   "publishConfig": {
-      "access": "public"
+    "access": "public"
   }
 }

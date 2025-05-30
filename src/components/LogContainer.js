@@ -1,34 +1,57 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { FixedSizeList as List } from 'react-window';
 import LogEntry from './LogEntry';
 
 function LogContainer({ logs, allLogs, autoscroll, onAutoscrollChange, showTimestamp }) {
+  const listRef = useRef(null);
   const containerRef = useRef(null);
-  const userScrolledRef = useRef(false);
-  const scrollTimeoutRef = useRef(null);
+  const [containerHeight, setContainerHeight] = useState(400);
 
   useEffect(() => {
-    if (autoscroll && logs.length > 0 && containerRef.current) {
+    if (autoscroll && logs.length > 0 && listRef.current) {
       // Always scroll to bottom when autoscroll is enabled and new logs arrive
-      containerRef.current.scrollTo({
-        top: containerRef.current.scrollHeight,
-        behavior: 'instant'
-      });
+      listRef.current.scrollToItem(logs.length - 1, 'end');
     }
   }, [logs, autoscroll]);
 
-  const handleWheel = (e) => {
-    const scrollableEl = containerRef.current;
-    if (!scrollableEl) {
-      return;
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        const { height } = entry.contentRect;
+        setContainerHeight(height - 32); // Account for padding
+      }
+    });
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
     }
-    const maxScrollHeight =
-      scrollableEl.scrollHeight - scrollableEl.clientHeight;
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  const handleWheel = (e) => {
     if (e.deltaY < 0) {
       onAutoscrollChange(false);
-    } else if (scrollableEl.scrollTop === maxScrollHeight) {
-      onAutoscrollChange(true);
+    } else {
+      // Check if we're at the bottom
+      const list = listRef.current;
+      if (list) {
+        const { scrollTop, scrollHeight, clientHeight } = list._outerRef;
+        const isAtBottom = scrollTop >= scrollHeight - clientHeight - 5;
+        if (isAtBottom) {
+          onAutoscrollChange(true);
+        }
+      }
     }
   };
+
+  const Row = ({ index, style }) => (
+    <div style={style}>
+      <LogEntry log={logs[index]} showTimestamp={showTimestamp} />
+    </div>
+  );
 
   const renderContent = () => {
     if (logs.length === 0 && allLogs.length > 0) {
@@ -47,25 +70,23 @@ function LogContainer({ logs, allLogs, autoscroll, onAutoscrollChange, showTimes
       );
     }
 
-    return logs.map((log, index) => (
-      <LogEntry key={index} log={log} showTimestamp={showTimestamp} />
-    ));
+    return (
+      <List
+        ref={listRef}
+        height={containerHeight}
+        itemCount={logs.length}
+        itemSize={35} // Approximate height of each log entry
+        onWheel={handleWheel}
+      >
+        {Row}
+      </List>
+    );
   };
-
-  useEffect(() => {
-    // Cleanup timeout on unmount
-    return () => {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <div
       className="log-container"
       ref={containerRef}
-      onWheel={handleWheel}
     >
       {renderContent()}
     </div>
