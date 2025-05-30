@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import LogEntry from './LogEntry';
 
-function LogContainer({ logs, allLogs, autoscroll, onAutoscrollChange }) {
+function LogContainer({ logs, allLogs, autoscroll, onAutoscrollChange, showTimestamp }) {
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ function LogContainer({ logs, allLogs, autoscroll, onAutoscrollChange }) {
     }
 
     return logs.map((log, index) => (
-      <LogEntry key={index} log={log} />
+      <LogEntry key={index} log={log} showTimestamp={showTimestamp} />
     ));
   };
 

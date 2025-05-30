@@ -1,6 +1,6 @@
 import React from 'react';
 
-function LogEntry({ log }) {
+function LogEntry({ log, showTimestamp }) {
   const parseAnsiColors = (text) => {
     // ANSI color codes mapping
     const colorMap = {
@@ -111,9 +111,11 @@ function LogEntry({ log }) {
 
   return (
     <div className="log-entry">
-      <div className="timestamp">
-        {new Date(log.timestamp).toLocaleTimeString()}
-      </div>
+      {showTimestamp && (
+        <div className="timestamp">
+          {new Date(log.timestamp).toLocaleTimeString()}
+        </div>
+      )}
       <div 
         className="message" 
         dangerouslySetInnerHTML={{ __html: parseAnsiColors(log.message) }}

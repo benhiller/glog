@@ -10,6 +10,7 @@ function App() {
   const [logs, setLogs] = useState([]);
   const [filterText, setFilterText] = useState('');
   const [autoscroll, setAutoscroll] = useState(true);
+  const [showTimestamp, setShowTimestamp] = useState(true);
   const wsRef = useRef(null);
 
   const connect = () => {
@@ -63,6 +64,10 @@ function App() {
     setAutoscroll(!autoscroll);
   };
 
+  const toggleTimestamp = () => {
+    setShowTimestamp(!showTimestamp);
+  };
+
   const filteredLogs = filterText 
     ? logs.filter(log => 
         log.message.toLowerCase().includes(filterText.toLowerCase())
@@ -71,7 +76,11 @@ function App() {
 
   return (
     <div className="app">
-      <Header connected={connected} />
+      <Header 
+        connected={connected} 
+        showTimestamp={showTimestamp}
+        onToggleTimestamp={toggleTimestamp}
+      />
       <FilterContainer 
         filterText={filterText} 
         onFilterChange={setFilterText} 
@@ -81,6 +90,7 @@ function App() {
         allLogs={logs}
         autoscroll={autoscroll}
         onAutoscrollChange={setAutoscroll}
+        showTimestamp={showTimestamp}
       />
       <Controls 
         onClearLogs={clearLogs}
