@@ -1,8 +1,8 @@
 {
   "name": "@benhiller/glog",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "bin": {
-    "glog": "./bin/glog.js"
+    "glog": "bin/glog.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -29,6 +29,6 @@
     "parcel": "^2.15.2"
   },
   "publishConfig": {
-      "access": "public"
+    "access": "public"
   }
 }
