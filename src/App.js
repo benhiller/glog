@@ -3,7 +3,7 @@ import Header from './components/Header';
 import FilterContainer from './components/FilterContainer';
 import LogContainer from './components/LogContainer';
 import Controls from './components/Controls';
-import { stripAnsiCodes } from './utils/ansiUtils';
+import { stripAnsiCodes, stripTimestampFromWorkerName } from './utils/ansiUtils';
 import './App.css';
 
 function App() {
@@ -36,7 +36,8 @@ function App() {
         if (workerMatch) {
           const rawWorkerName = workerMatch[1].trim();
           const cleanWorkerName = stripAnsiCodes(rawWorkerName);
-          setWorkers(prevWorkers => new Set([...prevWorkers, cleanWorkerName]));
+          const workerNameWithoutTimestamp = stripTimestampFromWorkerName(cleanWorkerName);
+          setWorkers(prevWorkers => new Set([...prevWorkers, workerNameWithoutTimestamp]));
         }
 
         setLogs(prevLogs => {
@@ -114,7 +115,8 @@ function App() {
       // Apply worker filter
       const rawWorkerName = workerMatch[1].trim();
       const cleanWorkerName = stripAnsiCodes(rawWorkerName);
-      if (hiddenWorkers.has(cleanWorkerName)) {
+      const workerNameWithoutTimestamp = stripTimestampFromWorkerName(cleanWorkerName);
+      if (hiddenWorkers.has(workerNameWithoutTimestamp)) {
         return false;
       }
     }
