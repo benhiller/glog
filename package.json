@@ -7,8 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node bin/glog.js",
-    "build": "parcel build src/index.html --dist-dir dist",
-    "dev": "parcel src/index.html --dist-dir dist"
+    "build": "rm -rf dist .parcel-cache && parcel build src/index.html --dist-dir dist",
+    "dev": "rm -rf dist .parcel-cache && parcel src/index.html --dist-dir dist"
   },
   "keywords": [
     "logging",
