@@ -1,6 +1,6 @@
 {
   "name": "@benhiller/glog",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "bin": {
     "glog": "./bin/glog.js"
   },

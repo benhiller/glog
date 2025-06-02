@@ -7,3 +7,15 @@ TODO:
 - Use React + virutalized library to render massive list of logs more efficiently?
 - Set max number of messages stored to avoid using excessive memory
 - Adjust scrollbar thumb color, hard to see currently
+
+Publishing to npm:
+Run `rm -r dist && npm run build`
+Copy:
+- bin/
+- dist/
+- index.js
+- package-lock.json
+- package.json
+- public/
+- README.txt
+to a folder, then run `npm publish ./folder_name`
