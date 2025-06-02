@@ -25,7 +25,7 @@ function LogContainer({ logs, allLogs, autoscroll, onAutoscrollChange, showTimes
       scrollableEl.scrollHeight - scrollableEl.clientHeight;
     if (e.deltaY < 0) {
       onAutoscrollChange(false);
-    } else if (scrollableEl.scrollTop === maxScrollHeight) {
+    } else if (Math.abs(scrollableEl.scrollTop - maxScrollHeight) < 1) {
       onAutoscrollChange(true);
     }
   };
