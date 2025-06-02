@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 function LogEntry({ log, showTimestamp }) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const parseAnsiColors = (text) => {
     // ANSI color codes mapping
     const colorMap = {
@@ -109,8 +110,12 @@ function LogEntry({ log, showTimestamp }) {
     return html;
   };
 
+  const handleClick = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
-    <div className="log-entry">
+    <div className={`log-entry ${isExpanded ? 'expanded' : ''}`} onClick={handleClick}>
       {showTimestamp && (
         <div className="timestamp">
           {new Date(log.timestamp).toLocaleTimeString()}

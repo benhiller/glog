@@ -114,6 +114,13 @@ body {
   padding: 0.25rem 0;
   border-bottom: 1px solid #2d2d30;
   word-wrap: break-word;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.log-entry:hover {
+  background-color: #2d2d30;
 }
 
 .timestamp {
@@ -125,7 +132,28 @@ body {
 
 .message {
   flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.2s ease;
+}
+
+.log-entry.expanded .message {
   white-space: pre-wrap;
+  overflow: visible;
+  text-overflow: initial;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #1e1e1e;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  padding: 0.5rem;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .controls {
