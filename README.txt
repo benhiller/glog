@@ -6,6 +6,5 @@ Copy:
 - index.js
 - package-lock.json
 - package.json
-- public/
 - README.txt
 to a folder, then run `npm publish ./folder_name`
