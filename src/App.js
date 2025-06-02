@@ -30,7 +30,7 @@ function App() {
     wsRef.current.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        
+
         // Extract worker name if message follows 'worker | message' format
         const workerMatch = data.message.match(/^([^|]+)\s*\|\s*/);
         if (workerMatch) {
@@ -38,8 +38,15 @@ function App() {
           const cleanWorkerName = stripAnsiCodes(rawWorkerName);
           setWorkers(prevWorkers => new Set([...prevWorkers, cleanWorkerName]));
         }
-        
-        setLogs(prevLogs => [...prevLogs, data]);
+
+        setLogs(prevLogs => {
+          const newLogs = [...prevLogs, data];
+          // Keep only the 1000 most recent messages
+          if (newLogs.length > 1000) {
+            newLogs = newLogs.slice(-1000);
+          }
+          return newLogs;
+        });
       } catch (e) {
         console.error('Error parsing message:', e);
       }
@@ -103,7 +110,7 @@ function App() {
       if (!content) {
         return false;
       }
-      
+
       // Apply worker filter
       const rawWorkerName = workerMatch[1].trim();
       const cleanWorkerName = stripAnsiCodes(rawWorkerName);
@@ -111,7 +118,7 @@ function App() {
         return false;
       }
     }
-    
+
     // Apply regex filter
     if (filterText) {
       try {
@@ -126,7 +133,7 @@ function App() {
         }
       }
     }
-    
+
     return true;
   });
 

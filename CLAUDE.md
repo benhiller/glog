@@ -28,8 +28,8 @@ glog npm run build
 ## Architecture
 
 - **bin/glog.js** - Main CLI script that reads from stdin and serves the web interface
-- **public/index.html** - Browser-based log viewer with live updates
-- **index.js** - Entry point that delegates to bin/glog.js
+- **src/index.js** - Browser-based log viewer with live updates built with React
+ - **index.js** - Entry point that delegates to bin/glog.js
 
 ### Data Flow
 1. CLI reads from stdin line by line
