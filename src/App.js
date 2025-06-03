@@ -6,6 +6,8 @@ import Controls from './components/Controls';
 import { stripAnsiCodes, stripTimestampFromWorkerName } from './utils/ansiUtils';
 import './App.css';
 
+const workerRegex = /^(\d{2}:\d{2}:\d{2}\s+)?(?<worker>[^|\s]+)\s*\|\s*(?<message>[\s\S]*)$/;
+
 function App() {
   const [connected, setConnected] = useState(false);
   const [logs, setLogs] = useState([]);
@@ -32,11 +34,11 @@ function App() {
         const data = JSON.parse(event.data);
 
         // Extract worker name if message follows 'worker | message' format
-        const workerMatch = data.message.match(/^([^|]+)\s*\|\s*/);
-        if (workerMatch) {
-          const rawWorkerName = workerMatch[1].trim();
-          const cleanWorkerName = stripAnsiCodes(rawWorkerName);
-          const workerNameWithoutTimestamp = stripTimestampFromWorkerName(cleanWorkerName);
+        const cleanMessage = stripAnsiCodes(data.message);
+        const workerMatch = cleanMessage.match(workerRegex);
+        if (workerMatch?.groups?.worker) {
+          const workerName = workerMatch.groups.worker.trim();
+          const workerNameWithoutTimestamp = stripTimestampFromWorkerName(workerName);
           setWorkers(prevWorkers => new Set([...prevWorkers, workerNameWithoutTimestamp]));
         }
 
@@ -104,18 +106,18 @@ function App() {
 
   const filteredLogs = logs.filter(log => {
     // Filter out messages that have worker format but no content after the pipe
-    const workerMatch = log.message.match(/^([^|]+)\s*\|\s*(.*)$/);
+    const cleanMessage = stripAnsiCodes(log.message);
+    const workerMatch = cleanMessage.match(workerRegex);
     if (workerMatch) {
-      const content = workerMatch[2].trim();
+      const content = workerMatch.groups.message?.trim();
       // Skip messages with no content after the worker name
       if (!content) {
         return false;
       }
 
       // Apply worker filter
-      const rawWorkerName = workerMatch[1].trim();
-      const cleanWorkerName = stripAnsiCodes(rawWorkerName);
-      const workerNameWithoutTimestamp = stripTimestampFromWorkerName(cleanWorkerName);
+      const workerName = workerMatch.groups.worker?.trim();
+      const workerNameWithoutTimestamp = stripTimestampFromWorkerName(workerName);
       if (hiddenWorkers.has(workerNameWithoutTimestamp)) {
         return false;
       }
