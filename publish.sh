@@ -3,8 +3,8 @@
 rm -r dist
 npm run build
 mkdir publish
-cp -r bin/ publish
-cp -r dist/ publish
+cp -R bin publish
+cp -R dist publish
 cp index.js publish
 cp package-lock.json publish
 cp package.json publish
