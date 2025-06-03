@@ -10,18 +10,18 @@ function LogEntry({ log, showTimestamp }) {
       '90': '#6b7280', '91': '#ff8787', '92': '#8ce99a', '93': '#ffe066',
       '94': '#74c0fc', '95': '#da77f2', '96': '#66d9ef', '97': '#f8f9fa'
     };
-    
+
     const bgColorMap = {
       '40': '#000000', '41': '#ff6b6b', '42': '#51cf66', '43': '#ffd43b',
       '44': '#339af0', '45': '#cc5de8', '46': '#22b8cf', '47': '#ffffff',
       '100': '#6b7280', '101': '#ff8787', '102': '#8ce99a', '103': '#ffe066',
       '104': '#74c0fc', '105': '#da77f2', '106': '#66d9ef', '107': '#f8f9fa'
     };
-    
+
     let html = '';
     let currentStyles = '';
     let i = 0;
-    
+
     while (i < text.length) {
       if (text[i] === '\x1b') {
         // Check for different types of ANSI escape sequences
@@ -31,12 +31,12 @@ function LogEntry({ log, showTimestamp }) {
           while (j < text.length && /[0-9;]/.test(text[j])) {
             j++;
           }
-          
+
           if (j < text.length && text[j] === 'm') {
             // This is a color/style sequence
             const codes = text.substring(i + 2, j).split(';');
             let styles = '';
-            
+
             for (const code of codes) {
               if (code === '0' || code === '') {
                 // Reset
@@ -54,18 +54,18 @@ function LogEntry({ log, showTimestamp }) {
                 styles += `background-color: ${bgColorMap[code]}; `;
               }
             }
-            
+
             if (currentStyles && styles !== currentStyles) {
               html += '</span>';
             }
-            
+
             if (styles) {
               html += `<span style="${styles}">`;
               currentStyles = styles;
             } else {
               currentStyles = '';
             }
-            
+
             i = j + 1;
           } else {
             // Unknown CSI sequence - skip it entirely
@@ -96,17 +96,17 @@ function LogEntry({ log, showTimestamp }) {
           i += 2;
         }
       } else {
-        html += text[i] === '<' ? '&lt;' : 
-               text[i] === '>' ? '&gt;' : 
+        html += text[i] === '<' ? '&lt;' :
+               text[i] === '>' ? '&gt;' :
                text[i] === '&' ? '&amp;' : text[i];
         i++;
       }
     }
-    
+
     if (currentStyles) {
       html += '</span>';
     }
-    
+
     return html;
   };
 
@@ -115,17 +115,33 @@ function LogEntry({ log, showTimestamp }) {
   };
 
   return (
-    <div className={`log-entry ${isExpanded ? 'expanded' : ''}`} onClick={handleClick}>
-      {showTimestamp && (
-        <div className="timestamp">
-          {new Date(log.timestamp).toLocaleTimeString()}
+    <>
+      {isExpanded &&
+        <div className={`log-entry ${isExpanded ? 'expanded' : ''}`} onClick={handleClick}>
+          {showTimestamp && (
+            <div className="timestamp">
+              {new Date(log.timestamp).toLocaleTimeString()}
+            </div>
+          )}
+          <div
+            className="message"
+            dangerouslySetInnerHTML={{ __html: parseAnsiColors(log.message) }}
+          />
         </div>
-      )}
-      <div 
-        className="message" 
-        dangerouslySetInnerHTML={{ __html: parseAnsiColors(log.message) }}
-      />
-    </div>
+      }
+
+      <div className="log-entry" onClick={handleClick}>
+        {showTimestamp && (
+          <div className="timestamp">
+            {new Date(log.timestamp).toLocaleTimeString()}
+          </div>
+        )}
+        <div
+          className="message"
+          dangerouslySetInnerHTML={{ __html: parseAnsiColors(log.message) }}
+        />
+      </div>
+    </>
   );
 }
 
