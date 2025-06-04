@@ -80,8 +80,6 @@ function App() {
 
   const clearLogs = () => {
     setLogs([]);
-    setWorkers(new Set());
-    setHiddenWorkers(new Set());
   };
 
   const toggleAutoscroll = () => {
